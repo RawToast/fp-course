@@ -267,8 +267,8 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
+find _ Nil       = Empty
+find f (x :. xs) = if (f x) then (Full x) else find f xs
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -283,11 +283,18 @@ find =
 --
 -- >>> lengthGT4 infinity
 -- True
+-- foldLeft :: (b -> a -> b) -> b -> List a -> b
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+lengthGT4 xs = countToFour xs 0
+
+countToFour ::
+  List a
+  -> Int
+  -> Bool
+countToFour Nil i = if i > 4 then True else False
+countToFour (_ :. xs) i = if i > 4 then True else countToFour xs (i + 1)
 
 -- | Reverse a list.
 --
@@ -300,11 +307,12 @@ lengthGT4 =
 -- prop> \x -> let types = x :: List Int in reverse x ++ reverse y == reverse (y ++ x)
 --
 -- prop> \x -> let types = x :: Int in reverse (x :. Nil) == x :. Nil
+-- foldRight :: (a -> b -> b) -> b -> List a -> b
 reverse ::
   List a
-  -> List a
-reverse =
-  error "todo: Course.List#reverse"
+  -> List a -- \bs -> (x :. bs)
+reverse as = foldLeft(\t h -> (h :. Nil) ++ t) Nil as
+
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
